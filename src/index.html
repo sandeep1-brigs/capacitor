@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10, user-scalable=yes">
+  <meta charset="UTF-8">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
+  <link rel="canonical" href="https://html5-templates.com/">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.structure.min.css">
+
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" >-->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=The+Nautigal:wght@700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Moon+Dance&display=swap" rel="stylesheet">
+
+
+  <!-- <link rel="stylesheet" type="text/css" href="css/materialize.css"> -->
+  <!-- <link rel="stylesheet" type="text/css" href="css/spinner.css"> -->
+  <link rel="stylesheet" type="text/css" href="css/index.css">
+  <link rel="stylesheet" type="text/css" href="css/digiveu.css">
+  <link rel="stylesheet" type="text/css" href="css/ert.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="css/slider.css">
+  <link rel="stylesheet" type="text/css" href="css/fonts.css">
+  <link rel="stylesheet" type="text/css" href="css/pdfviewer.css">
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+
+
+  <title>Capacitor App</title>
+</head>
+<body>
+    <div id="headerSection" class="headerStyle">
+        <div class="headerAreaStyle">
+            <div class="headerLogoAreStyle">
+                <!--<div class="dropDownMenuBtnStyle" onclick="toggleNavMenu()"><i class="fas fa-bars"></i></div>-->
+
+                <div class="companyLogoAreaStyle" onclick="viewHome()">
+                    <img class="companyLogoStyle" src="img\Responsive Logo -2.png" style="max-height: 60px;"/>
+                    <!--<img class="companyLogoStyle" src="img/brigs_logo.png" style="max-height: 60px;"/>-->
+                    <!--<div class="companyTagTextStyle" >We enable you</div>-->
+                </div>
+            </div>
+
+            <div class="userAreaStyle" onclick="viewLogin('menuProcess')">
+                <!--<div id="notificationIcon" class="userProfileBtnAreaStyle" onclick="viewUserNotifications()" >
+					<span><i class="far fa-bell"></i></span>
+					<div id="notificationOverlay" class="notificationOverlayClass"></div>
+			    </div>-->
+                <div id="userIcon" class="userProfileBtnAreaStyle">
+                    <!--<span><i class="far fa-user" style="padding: 10px;"></i></span>-->
+                    <span class="material-symbols-outlined" style="font-size: 30px; margin: 4px;">person</span>
+                    <div id="onlineDotOverlay" class="notificationOverlayClass"></div>
+                </div>
+                <div id="loggedUserName"></div>
+            </div>
+        </div>
+        <div id="headerMenu"></div>
+    </div>
+
+
+    <div id="workAreaSection" class="workAreaStyle">
+
+        <div id="navDrawer" onclick="closeNavMenu()">
+            <div id="navMenu"></div>
+        </div>
+
+        <!-------------------------------- LOADING SPINNER ------------------------------------>
+        <!-- <div onclick="closeLoadingSpinner()" id="loadingmessage" style="display:none;">
+            <div id="spinnerImage"></div>
+        </div>
+        <div id="uploadingmessage" style="display:none;">
+            <div id="uploaderMessageArea">
+                <div style="text-align: center;">
+                    <div id="uploaderImage"></div>
+                    <div id="uploaderMessage">Please wait while file loads!</div>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- <div id="dialogBox" onclick="closeDialogBox()" style="display:none; z-index:20;">
+            <div id="dialogBoxCard">
+                <div id="dialogText"></div>
+                <div id="dialogOk">OK </div>
+            </div>
+        </div> -->
+
+        <!-- <div id="networkSignal" style="z-index:100; position: absolute; top: 0; width: 100%; display: flex; justify-content: center;">
+            <img id="networkSignalIcon" style="width: 40px; height: 40px;" src="./img/no_network.png" />
+        </div> -->
+
+        <!-- <div id="confirmDialogBox" onclick="closeConfirmDialogBox()" style="display:none; z-index:20;">
+            <div id="confirmDialogBoxCard">
+                <div id="confirmDialogText"></div>
+                <div style="display:flex; justify-content: space-around;">
+                    <div id="confirmDialogYes">YES</div>
+                    <div id="confirmDialogNo">NO</div>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- <div class="fullScreenImage" id="img_fsarea"></div> -->
+            <!-- the below is already commented  -->
+        <!-- <div id="wallpaper"><img src="img/banner/227928-3D-artwork-geometry.jpg"></div> -->
+
+        <!-- <div id="notificationArea" class="notificationAreaClass">
+            <div class="userNotificationBox" id="notificationDetail">
+                <div class="closeButton" onclick="closeNotificationDetail()"><i class="fas fa-times"></i></div>
+                <div class="notificationAreaContent"  id="notificationDetailContent"></div>
+            </div>
+            <div class="userNotificationBox" id="notificationList">
+                <div class="closeButton" onclick="closeUserNotifications()"><i class="fas fa-times"></i></div>
+                <div class="notificationAreaContent" id="notificationListContent"></div>
+            </div>
+        </div> -->
+
+        <!-------------------------------- HOME SECTION ------------------------------------>
+        <div id="homeSection" style="display:none; border:none; height: 100%; overflow: auto;">
+            <div id="homeWindow" style="height: 100%;"></div>
+        </div>
+
+        <!-------------------------------- EXIT APP MESSAGE ------------------------------------>
+        <div id="exitAppMessage" style="display: none;">
+            <div id="exitAppMessageArea">
+                <div>Press back again to exit</div>
+            </div>
+        </div>
+
+        <!-------------------------------- LOGOUT SECTION ------------------------------------>
+
+        <div id="logoutSection"  class="loginsection">
+            <div id="logoutBackground" class="loginbackground"></div>
+            <div id="logoutArea" class="loginarea">
+                <div id="logoutWindow" class="loginwindow">
+                    <div id="logoutIcon" class="loginicon">
+                        <!--<i class="fas fa-user"></i>-->
+                        <!--<span class="material-symbols-outlined" style="font-size: 35px;">person</span>-->
+                        <img src="./img/gear_user.png" class="dropShadowPng" style="width:80%; object-fit: contain;"/>
+                    </div>
+
+                    <div id="logoutForm" style="float:left; height:100%; width:75%;">
+                        <div onclick="closeLogoutWindow()" style="float:right; padding:5px 15px; color:rgba(50,50,50,1.0); margin:10px; font-size:1.3em; line-height: 1.5;"><i class="fas fa-times"></i></div>
+                        <p id="logoutUserMessage" style="padding:50px 20px 30px 20px; font-size:1.3em; line-height: 1.5; font-weight:normal; color:var(--secondary-blue);">
+                            </p>
+                        <p style="padding:0px 20px 0px 20px; font-size:1.3em; line-height: 1.5; font-weight:bold; color:rgba(50,50,50,1.0);">
+                            Logout?</p>
+
+                        <div id="logoutButton" style="width:fit-content; text-align:center; background:var(--secondary-orange); padding:10px 20px; color:var(--primary-white); margin: 15px auto 15px auto; border-radius:5px; font-size:1.3em; line-height:1.5; box-shadow:2px 2px 4px 0px rgba(0,0,0,0.2);">
+                            Logout <i class="fas fa-sign-out-alt"></i>
+                        </div>
+                        <hr class="lightblack">
+                        <div style="display:flex; margin:15px 0;">
+                            <div id="continueButton2" style="text-align:left; font-size:1.3em; line-height:1.5; color:var(--secondary-blue); padding:5px 20px;">
+                                Continue without logging out
+                            </div>
+                            <!--<div id="continueButton2" style="background:rgba(30,100,160,1.0); color:rgba(255,255,255,0.6); border-radius:5px; font-size:1.5em; line-height:1.5; text-align:center; padding:5px 20px; box-shadow:2px 2px 4px rgba(0,0,0,0.2);">
+                                Continue
+                            </div>-->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-------------------------------- LOGIN SECTION ------------------------------------>
+        <div id="loginSection" class="loginsection">
+            <div id="loginBackground" class="loginbackground"></div>
+            <div id="loginArea" class="loginarea">
+                <div id="loginWindow" class="loginwindow">
+                    <div id="loginIcon" class="loginicon">
+                        <!--<i class="fas fa-user"></i>-->
+                        <!--<span class="material-symbols-outlined" style="font-size: 35px;">person</span>-->
+                        <img src="./img/gear_user.png" style="width:90%; object-fit: contain;"/>
+                    </div>
+
+                    <div id="loginForm" style="height:100%; width:75%; display: inline-grid;">
+                        <input type="text" id="homeloginuserName" placeholder="User ID" style="width:80%; padding:5px 15px; color:rgb(50,50,50); background-color:transparent; border-style:none; margin:25px 20px 10px 20px; font-size:1.0em; line-height:1.5; border-bottom:1px solid rgba(0,0,0,0.1);">
+                        <input type="password" id="homeloginpassword" placeholder="Password" style="width:80%; padding:5px 15px; color:rgb(50,50,50); background-color:transparent; border-style:none; margin:10px 20px; font-size:1em; line-height:1.5; border-bottom:1px solid rgba(0,0,0,0.1);"><br>
+
+                        <!-- <input type="text" id="homeloginuserName" placeholder="User ID" >
+                        <input type="password" id="homeloginpassword" placeholder="Password" > -->
+
+                        <button id="loginButton" style="text-align:center; background:var(--secondary-blue); padding:10px 30px; color:var(--primary-white); margin: 15px auto 20px auto; border-radius:5px; font-size:1.0em; line-height:1.5; border: none; box-shadow:2px 2px 4px 0px rgba(0,0,0,0.2);">
+                            <i style="padding: 0 10px;" class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <hr class="lightblack">
+                        <div style="display:flex; margin:10px 20px;">
+                            <div id="continueButton" style="text-align:left; font-size:1em; line-height:1.5; color:var(--secondary-blue);">
+                                Continue without logging in
+                            </div>
+                            <!-- <div id="continueButton" style="background:rgba(30,100,160,1.0); color:rgba(255,255,255,0.6); border-radius:5px; font-size:1.5em; line-height:1.5; text-align:center; padding:5px 20px; box-shadow:2px 2px 4px rgba(0,0,0,0.2);">
+                                Continue
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="signageStartMessage" style="padding:10px 10px; position: absolute; bottom: 20px; display:none; width: 100%; text-align: center;">
+                    <div style="padding:10px 10px; display:none; width: fit-content; background-color:rgba(0,0,0,0.3);  color:rgb(255, 255, 255); border-radius: 5px; display: flex; margin: 0px auto 0 auto; z-index:1001;">
+                        <p id="signageMessage" style="padding:0 10px;">Signage will start in: </p>
+                        <p id="SecondsUntilExpire"></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-------------------------------- SYSTEM SETUP LOGIN SECTION ------------------------------------>
+        <div id="systemLoginSection"  class="loginsection">
+            <div id="systemLoginBackground" class="loginbackground"></div>
+            <div id="systemLoginArea" class="loginarea">
+                <div id="systemLoginWindow" class="loginwindow">
+                    <div id="systemLoginIcon"  class="loginicon">
+                        <!--<i class="fas fa-user"></i>-->
+                        <!--<span class="material-symbols-outlined" style="font-size: 35px;">person</span>-->
+                        <img src="./img/gear_user.png" style="width:90%; object-fit: contain;"/>
+                    </div>
+
+                    <form id="systemLoginForm" style="height:100%; width:75%; display: inline-grid;">
+                        <input type="text" id="sysUserName" placeholder="Admin ID" style="width:80%; padding:0px 15px; color:rgba(50,50,50,1.0); background-color:transparent; border-style:none; margin:25px 20px 10px 20px; font-size:1.0em; line-height:1.5; border-bottom:1px solid rgba(0,0,0,0.1);"><br>
+                        <input type="password" id="sysPassword" placeholder="Admin Password" style="width:80%; padding:0px 15px; color:rgba(50,50,50,1.0); background-color:transparent; border-style:none; margin:10px 20px; font-size:1em; line-height:1.5; border-bottom:1px solid rgba(0,0,0,0.1);"><br>
+
+
+                        <a type="submit" id="systemLoginButton" style="text-align:center; background:var(--secondary-blue); padding:5px 30px; color:var(--primary-white); margin: 15px auto 20px auto; border-radius:5px; font-size:1.0em; line-height:1.5; box-shadow:2px 2px 4px 0px rgba(0,0,0,0.2);">
+                            <i style="padding: 0 10px;" class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                        <hr class="lightblack">
+                        <div style="display:flex; margin:10px 20px;">
+                            <div id="systemContinueButton" style="text-align:left; font-size:1em; line-height:1.5; color:var(--secondary-blue);">
+                                I don't have Admin password!
+                            </div>
+                            <!-- <div id="continueButton" style="background:rgba(30,100,160,1.0); color:rgba(255,255,255,0.6); border-radius:5px; font-size:1.5em; line-height:1.5; text-align:center; padding:5px 20px; box-shadow:2px 2px 4px rgba(0,0,0,0.2);">
+                                Continue
+                            </div> -->
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-------------------------------- DEVICE INFO SECTION ------------------------------------>
+        <div id="deviceInfoSection" style="display: none; overflow: auto;" onclick="closeDeviceInfo()">
+            <div id="deviceInfoArea">
+                <div id="deviceInfoTitle">About this device</div>
+                <div id="deviceInfoBox">
+                </div>
+            </div>
+        </div>
+
+        <!---------------------------------- ARCHIVE SHARE ------------------------------------>
+        <div class="appSection" id="archiveShareSection" style="z-index: 4; display: none;"></div>
+
+
+        <div id="underConstructionSection" onclick="closeUnderContruction()" style="display: none; position: absolute; top: 0; bottom: 0; right: 0; left: 0; justify-content: center; align-items: center; background-color: rgba(0,0,0,0.2); z-index: 2;">
+            <div id="underConstructionArea" style="margin: 20px; border-radius: 15px; padding: 10px; position: relative; max-width: 100%; max-height: 100%; background-color: rgb(255,255,255); box-shadow: 2px 2px 4px rgb(0 0 0 / 50%);">
+                <img src="img/under-construction.png" style="max-width: 100%; max-height: 100%;"/>
+            </div>
+        </div>
+
+        <!-------------------------------- ALL MODULES SECTION ------------------------------------>
+        <div id="modulesSection" class="appSection" style="display: none; overflow: auto;">
+            <div id="modulesArea" class="appArea">
+                <div class="moduleHeader" id="modulesModuleHeader">
+                    <div id="modulesPrevButton" class="moduleHeaderBtn" onclick="backBtnHandle()"><span class="material-symbols-outlined" style="font-size: 30px;">arrow_back</span></div>
+
+                    
+                    <!--<div><img class="screenLogo" src="./img/logo_sitemate.png"></div>-->
+                    <div id="moduleTitle" class="moduleNameClass"></div>
+                    <div id="modulesCloseButton" class="moduleHeaderBtn" onclick="exitModules()"><span class="material-symbols-outlined" style="font-size: 30px;">close</span></div>
+                </div>
+                <div id="modulesBox" class="appBox">
+                    <div class="appFullPage" id="modulesMenuArea"></div>
+                    <div class="lightBkClass" id="modulesListArea" style="overflow: auto;"><div class="appFullPage" id="modulesListBox" style="padding-bottom: 30px;"></div></div>
+                    <div class="appFullPage" id="modulesDisplayArea"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-------------------------------- PIPEMARK SECTION ------------------------------------>
+        <div id="pipemarkSection" class="appSection" style="display: none; overflow: auto;">
+            <div id="pmArea" class="appArea">
+                <div class="moduleHeader" id="pmModuleHeader">
+                    <div id="pmPrevButton" class="moduleHeaderBtn" onclick="backPipemarkHandle()"><span class="material-symbols-outlined" style="font-size: 30px;">arrow_back</span></div>
+
+                    <!-- the below line was previously commented -->
+                    <!--<div><img class="screenLogo" src="./img/logo_pipemark.png" style="height: 60px; margin-top: 5px;"></div>-->
+
+
+                    <div class="moduleNameClass">PIPE MARKERS</div>
+                    <div id="pipemarkCloseButton" class="moduleHeaderBtn" onclick="closePipemark()"><span class="material-symbols-outlined" style="font-size: 30px;">close</span></div>
+                </div>
+                <div id="pipemarkBox" class="appBox"></div>
+                
+            </div>
+        </div>
+
+
+        <!-------------------------------- ERT SECTION ------------------------------------>
+        <div id="ertSection" class="appSection" style="display: none; overflow: auto;">
+            <div id="ertworkarea" style="height: 100%;">
+                <div id="ertCloseBtn" class="videoControlButton" onclick="exitErt()"> <i class="fas fa-times"></i></div>
+                <div id="ertViewerArea" style="height: 100%;"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-------------------------------- SYSTEM SECTION ------------------------------------>
+
+    <div id="systemSection" style="display:none; overflow: auto;">
+        <div id="systemArea">
+            <div id="systemWindow"></div>
+            <div id="qrCodeWindow" onclick="closeQRCode()" style="display:none; align-items:center; justify-content:center; position:absolute; top:0; left:0; bottom:0; right: 0; background-color: rgba(0,0,0,0.5); z-index:14;">
+                <div style="padding:40px; height: max-content; background-color: rgba(255,255,255,1.0); box-shadow:0px -4px 8px 0px rgba(0,0,0,0.2), 0px 10px 25px 10px rgba(0,0,0,0.3);">
+                    <div id="qrcode"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-------------------------------- CONTACT US SECTION ------------------------------------>
+
+    <div id="contactUsSection" class="appSection" style="display:none; overflow: auto;">
+        <div id="contactUsArea" Style="text-align: center;">
+            <div class="moduleHeader" style="position: unset; box-shadow: none; z-index: unset;" id="contactusModuleHeader">
+                <div></div>
+                <div class="moduleNameClass">CONTACT US</div>
+                <div id="contactUsCloseButton" class="moduleHeaderBtn" onclick="closeContactUs()"><span><i class="fas fa-times"></i></span></div>
+            </div>
+            <div class="moduleDescriptionClass" style="margin-top: 20px;">Please fill the form below. Our executive will get back to you soon.</div>
+            <div id="contactUsWindow"></div>
+        </div>
+    </div>
+
+    <!-------------------------------- HELP SECTION ------------------------------------>
+
+    <div id="helpSection" class="appSection" style="display:none; overflow: auto;">
+        <div id="HelpArea" class="appArea">
+            <div class="moduleHeader" id="helpModuleHeader" >
+                <div id="helpPrevButton" class="moduleHeaderBtn" onclick="backHelpHandle()"><span><i class="fas fa-arrow-left"></i></span></div>
+                <div class="moduleNameClass">HELP</div>
+                <div id="helpCloseButton" class="moduleHeaderBtn" onclick="exitHelp()"><span><i class="fas fa-times"></i></span></div>
+            </div>
+            <div id="helpBox" class="appBox">
+                <div class="appFullPage" id="helpListArea"></div>
+                <div class="appFullPage" id="helpMenuArea"></div>
+                <div class="appFullPage" id="helpDetailArea"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-------------------------------- DIGIVEU SECTION ------------------------------------>
+    <div id="bannerSection" >
+        <div id="signageworkarea">
+            <div id="signagePage"></div>
+            <div id="viewerCloseBtn" class="videoControlButton" onclick="exitToHome()"> <i class="fas fa-times"></i></div>
+
+
+            <div id="fullScreenBtn" class="videoControlButton" onclick="fullscreenBtnHandle()"> <i class="fas fa-expand"></i></div>
+
+
+            <div id="muteButton" class="videoControlButton" onclick="muteVolume()"> <i class="fas fa-volume-off"></i></div>
+
+
+            <div id="pauseButton" class="videoControlButton" style="font-size: 2.0em;" onclick="pauseVideo()"><i class="fas fa-pause"></i></div>
+            <input id="volControl" type="range" min="0" max="100" step="1" oninput="SetVolume(this.value)" onchange="SetVolume(this.value)"></input>
+        </div>
+        <div id="mydiv" style="display: none;"></div>
+    </div>
+
+    <div style="width: 100%; position: absolute; top: 500px; z-index: 3; display: none;" id="qrreader"></div>
+
+    <div id="footerSection">
+        <div id="footerMenu"></div>
+        <div id="appVersion" style="position: absolute; right: 10px; bottom: 5px; font-size: 8px;"></div>
+    </div>
+
+ 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script type="module" src = js/capacitor-welcome.js></script>
+<script type="module" src = js/globals.js></script>
+<script type="module" src = js/utility.js></script>
+<script type="module" src = js/settings.js></script>
+<script type="module" src = js/auth.js></script>
+<script type="module" src = js/content.js></script>
+<script type="module" src = js/list.js></script>
+<script type="module" src = js/pdfviewer.js></script>
+<script type="module" src = js/digiveu.js></script>
+<script type="module" src = js/assetmate.js></script>
+<script type="module" src = js/solutions.js></script>
+<script type="module" src = js/ert.js></script>
+<script type="module" src = js/notification.js></script>
+<script type="module" src = js/knowledgemate.js></script>
+<script type="module" src = js/visitmate.js></script>
+<script type="module" src = js/lotomate.js></script>
+<script type="module" src = js/sitemate.js></script>
+<script type="module" src = js/pipemarking.js></script>
+</body>
+</html>
