@@ -7,7 +7,7 @@ import $ from 'jquery';
 
 import { shared, appUrl, s3PrivateUrl, s3PublicUrl} from "./globals.js";
 import { displaySection, buildRequestOptions, isValidResponse, showConfirmDialog} from "./capacitor-welcome.js";
-import { showDialog, updateAppRuntime, highlightHeaderTabMenu, fixModuleHeight, constructUrl, getSignedUrl, pauseVideos, initPinchZoom} from "./utility.js";
+import { showDialog, updateAppRuntime, highlightHeaderTabMenu, fixModuleHeight, constructUrl, getSignedUrl, pauseVideos, initPinchZoom , startAppIdleTimer} from "./utility.js";
 import { getMenuBar, getNewToken, viewHome} from "./settings.js";
 import { apiRequestFailed } from './auth.js';
 import { createList } from './list.js';
@@ -128,7 +128,7 @@ function closeContent() {
 function exitContent() {
 	if(shared.mCustomerDetailsJSON == null) {
         console.log("🕒 Starting app idle timer to be added here...");
-       // startAppIdleTimer();
+        startAppIdleTimer();
     }
 	contents = [];
 	selectedContents = [];
@@ -165,7 +165,7 @@ function confirmExit() {
 	updateAppRuntime(shared.currentRunningApp, "off", "ok");
 	if(shared.mCustomerDetailsJSON == null) {
         console.log("🕒 Starting app idle timer to be added here...");
-        //startAppIdleTimer();
+        startAppIdleTimer();
     }
 	$('#modulesMenuArea').html('');
 	$('#modulesListBox').html('');
@@ -2580,3 +2580,4 @@ window.deleteShareNow = deleteShareNow;
 window.viewContentFullScreenImage = viewContentFullScreenImage;
 window.closeContentFullScreenImage = closeContentFullScreenImage;
 window.closeShareArchiveAdd = closeShareArchiveAdd;
+window.exitModules = exitModules;

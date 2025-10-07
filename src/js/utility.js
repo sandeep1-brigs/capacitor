@@ -7,6 +7,7 @@ import { App } from '@capacitor/app';
 import $ from 'jquery';
 import { Storage } from '@capacitor/storage';
 import Hammer from 'hammerjs';
+// import { Volume } from '@capacitor-community/volume';
 
 
 
@@ -35,6 +36,10 @@ var _exitAppTimer = null;
 var canExit = false;
 var copyKeyList = [];
 var appAliveTimer = null;
+var pollFpsTimer = null;
+var fpsMonitorTimer = null;
+
+
 
 $('.appBox').scroll(function() {
     if ($(this).scrollTop() > 20) {
@@ -99,7 +104,7 @@ export function backBtnHandle() {
 };
 
 
-function observeResize() {
+export function observeResize() {
     let workArea = document.getElementById('workAreaSection');
     const resizeObserver = new ResizeObserver(entries => {
         for (let entry of entries) {
@@ -134,7 +139,7 @@ function displayToast(msg) {
 
 }
 
-function addBtnToFavourite(btnId) {
+export function addBtnToFavourite(btnId) {
     moveBtnToSection(btnId, "homemenu_favorites");
 
     const data = { token: shared.mCustomerDetailsJSON.token, btnId: btnId };
@@ -158,7 +163,7 @@ function addBtnToFavourite(btnId) {
         .catch(err => console.warn("Request aborted due to missing requestOptions.", err));
 }
 
-function removeBtnFromFavourite(btnId) {
+export function removeBtnFromFavourite(btnId) {
     moveBtnToSection(btnId, "homemenu_modules");
 
     const data = { token: shared.mCustomerDetailsJSON.token, btnId: btnId };
@@ -1083,7 +1088,7 @@ export async function getGeoPosition(elemId) {
     }, options);
  }
 
-function startAppIdleTimer() {
+export function startAppIdleTimer() {
     IDLE_TIMEOUT = shared.systemConfiguration.systemInfo.appIdleTime; //seconds
 
     var elem = document.getElementById("loginSection");
@@ -1156,14 +1161,13 @@ function restartAppIdleTimer() {
     window.clearTimeout(_appIdleTimer);
     _appIdleTimer = null;
     if(shared.mCustomerDetailsJSON == null) {
-        console.log("below line is not yet implemented...");
-       // _appIdleTimer = setTimeout(function() {viewSignageStartText()}, 10000);
+        _appIdleTimer = setTimeout(function() {viewSignageStartText()}, 10000);
     }
 
     $("#signageStartMessage").css("display", "none");
 }
 
-function stopAppIdleTimer() {
+export function stopAppIdleTimer() {
     if(_appIdleTimer) {
         window.clearTimeout(_appIdleTimer);
         _appIdleTimer = null;
@@ -1235,7 +1239,7 @@ function exitApp() {
 
  export function pauseVideos() {
 	var players = document.getElementsByTagName('video');
-	for(player of players) {
+	for(var player of players) {
 		player.pause();
 	}
 }
@@ -1378,7 +1382,7 @@ export function exitToBanner() {
             }
         });
     } else {
-       // stopAppIdleTimer();
+        stopAppIdleTimer();
         startSignage();
     }
 }
@@ -1527,24 +1531,186 @@ function closeDeviceInfo() {
     $("#deviceInfoSection").css("display", "none");
 }
 
+function closeNeedAssistance() {
+    $("#needAssistantSection").css("display", "none");
+}
+
+
+async function viewNeedAssistance() {
+    // Show the "Need Assistance" section
+    $("#needAssistantSection").css("display", "block");
+
+    // Set initial volume to 0.8 (same logic as before)
+    try {
+        await Volume.set({ value: 0.8 });
+    } catch (err) {
+        console.error("Failed to set initial volume:", err);
+    }
+
+    // Get slider element
+    const slider = document.getElementById("mediaVolumeLevel");
+
+    // Update the current slider value (each time the user drags the slider handle)
+    slider.oninput = async function() {
+        try {
+            await Volume.set({ value: this.value / 100 });
+        } catch (err) {
+            console.error("Failed to set volume:", err);
+        }
+    };
+}
+
+function mediaError(e) {
+    console.log('Media Error ' + JSON.stringify(e));
+}
+
+function showMessage(res) {
+    $('#dialogBox').addClass(commonCMS.dialogBox.dialogBoxBackgroundClass);
+    $('#dialogBoxCard').addClass(commonCMS.dialogBox.dialogBoxCardClass);
+    $('#dialogText').addClass(commonCMS.dialogBox.dialogBoxTextClass);
+    $('#dialogBoxCard').css("background-color","rgba(0,0,0,0.5)");
+    $('#dialogText').css("color","rgb(255,255,255)");
+    $('#dialogOk').css("display", "none");
+
+    $('#dialogText').html(res);
+
+    $('#dialogBox').show();
+}
+
+function handleDialogCallback(callback) {
+    closeDialogBox();
+    eval(callback);
+}
+
+function customSerialize(str) {
+    var res = encodeURIComponent(str);
+    res = res.replace(/%20/g, '+');
+    res = res.replace(/%26/g, '&');
+    res = res.replace(/%3D/g, '=');
+    res = res.replace(/%5F/g, '_');
+    return res;
+}
+
+function convertToReadableDate(dateStr) {
+    // Fix the format by replacing the space before milliseconds with a dot
+    const fixedStr = dateStr.replace(' ', '.');
+  
+    // Create a Date object
+    const date = new Date(fixedStr);
+  
+    // Check for invalid date
+    if (isNaN(date)) {
+      return 'Invalid date';
+    }
+  
+    // Format options
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZoneName: 'short'
+    };
+  
+    return date.toLocaleString(undefined, options);
+}
+
+function remove_non_ascii(str) {
+    if ((str === null) || (str === ''))
+        return false;
+    else {
+        str = str.toString();
+        return str.replace(/\n/g, "").replace(/[\t ]+\</g, "<").replace(/\>[\t ]+\</g, "><").replace(/\>[\t ]+$/g, ">").replace(/[^\x20-\x7E]/g, '');
+    }
+}
+
+function callTimerEvent(callback, hour, min, intervalMilli) {
+    var currentTimeMilli = new Date();
+    var alarmTimeMilli, waitTimeMilli;
+
+    if (intervalMilli == undefined)
+        intervalMilli = 86400000; // 24 Hours
+
+    if (hour == undefined)
+        hour = 11; // 11 AM 
+
+    if (min == undefined)
+        min = 30; // 3O min 
+
+    alarmTimeMilli = new Date(currentTimeMilli.getFullYear(), currentTimeMilli.getMonth(), currentTimeMilli.getDate(), hour, min, 0, 0);
+    if (alarmTimeMilli < currentTimeMilli) {
+        alarmTimeMilli += intervalMilli;
+    }
+    waitTimeMilli = alarmTimeMilli - currentTimeMilli;
+    setTimeout(function() {
+        setInterval(function() {
+            eval(callback);
+            console.log('callTimerEvent: Invoked');
+        }, intervalMilli);
+    }, waitTimeMilli);
+}
+
+
 window.exitToBanner = exitToBanner; // Make globally accessible for inline HTML calls
-window.toggleNavMenu = toggleNavMenu;
-window.closeNavMenu = closeNavMenu;
-window.viewDeviceInfo = viewDeviceInfo;
-window.closeDeviceInfo = closeDeviceInfo;
-window.backBtnHandle = backBtnHandle;
-window.observeResize = observeResize;
-window.closeLoadingSpinner = closeLoadingSpinner;
-window.closeUploadingSpinner = closeUploadingSpinner;
-window.configureCustomBackButton = configureCustomBackButton;
-window.displayToast = displayToast;
-window.addBtnToFavourite = addBtnToFavourite;
-window.removeBtnFromFavourite = removeBtnFromFavourite;
-window.checkDeviceRegistration = checkDeviceRegistration;
-window.exitFullScreen = exitFullScreen;
-window.initAppRuntimeMonitor = initAppRuntimeMonitor;
-
-
-
-
+window.toggleNavMenu = toggleNavMenu;  // globally defined
+window.viewNavMenu = viewNavMenu;  // globally defined
+window.closeNavMenu = closeNavMenu;  // globally defined
+window.viewBveu = viewBveu;  // globally defined
+window.closeUnderContruction = closeUnderContruction;  // globally defined
+window.viewUnderContruction = viewUnderContruction;  // globally defined
+window.viewDeviceInfo = viewDeviceInfo; // globally defined
+window.closeDeviceInfo = closeDeviceInfo;  // globally defined
+window.backBtnHandle = backBtnHandle;  // globally defined
+window.observeResize = observeResize;  // globally defined
+window.closeLoadingSpinner = closeLoadingSpinner;  // globally defined
+window.closeUploadingSpinner = closeUploadingSpinner;  // globally defined
+window.configureCustomBackButton = configureCustomBackButton;  // globally defined
+window.displayToast = displayToast;  // globally defined
+window.addBtnToFavourite = addBtnToFavourite;  // globally defined
+window.removeBtnFromFavourite = removeBtnFromFavourite;  // globally defined
+window.checkDeviceRegistration = checkDeviceRegistration;  // globally defined
+window.showDialog = showDialog; // globally defined
+window.viewDashboard = viewDashboard;  // globally defined
+window.exitFullScreen = exitFullScreen; // globally defined
+window.initAppRuntimeMonitor = initAppRuntimeMonitor;  // globally defined
+window.constructUrl = constructUrl;  // globally defined
+window.sendDeviceTimesheet = sendDeviceTimesheet;  // globally defined
+window.cleanRuntimeData = cleanRuntimeData;  // globally defined
+window.closeDialogBox = closeDialogBox;  // globally defined
+window.convertVersionVal = convertVersionVal;  // globally defined
+window.isImageUrlValid = isImageUrlValid;  // globally defined
+window.fixModuleHeight = fixModuleHeight;  // globally defined
+window.updateAppRuntime = updateAppRuntime;  // globally defined
+window.getSignedUrl = getSignedUrl;  // globally defined
+window.getSignedUrlForUpload = getSignedUrlForUpload;  // globally defined
+window.closeSystem = closeSystem;  // globally defined
+window.exitSystem = exitSystem;  // globally defined
+window.doSettingChange = doSettingChange;  // globally defined
+window.handleMenuLongClick = handleMenuLongClick;  // globally defined
+window.exitToErt = exitToErt;  // globally defined
+window.startErt = startErt;  // globally defined
+window.highlightHeaderTabMenu = highlightHeaderTabMenu;  // globally defined
+window.getGeoPosition = getGeoPosition;  // globally defined
+window.startAppIdleTimer = startAppIdleTimer;  // globally defined
+window.restartAppIdleTimer = restartAppIdleTimer;  // globally defined
+window.stopAppIdleTimer = stopAppIdleTimer;  // globally defined
+window.viewSignageStartText = viewSignageStartText;  // globally defined
+window.CheckIdleTime = CheckIdleTime;  // globally defined
+window.exitApp = exitApp;  // globally defined
+window.pauseVideos = pauseVideos;  // globally defined
+window.initPinchZoom = initPinchZoom;  // globally defined
+window.captureImage = captureImage;  // globally defined
+window.startSignage = startSignage;  // globally defined
+window.populateImage = populateImage;   // globally defined
+window.populateTempCopiedImage = populateTempCopiedImage;   // globally defined 
+window.closeNeedAssistance = closeNeedAssistance;   // globally defined
+window.mediaError = mediaError;   // globally defined
+window.showMessage = showMessage;   // globally defined
+window.handleDialogCallback = handleDialogCallback;   // globally defined
+window.customSerialize = customSerialize;   // globally defined
+window.convertToReadableDate = convertToReadableDate;   // globally defined
+window.remove_non_ascii = remove_non_ascii;   // globally defined
+window.callTimerEvent = callTimerEvent;   // globally defined
 

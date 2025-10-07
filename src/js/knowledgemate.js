@@ -12,7 +12,7 @@ import { Browser } from '@capacitor/browser';
 import { shared , s3PrivateUrl } from "./globals.js";
 import { displaySection , buildRequestOptions , isValidResponse , RequestOptions} from "./capacitor-welcome.js";
 import { getMenuBar ,viewHome , getNewToken} from "./settings.js";
-import { highlightHeaderTabMenu , constructUrl , showDialog , fixModuleHeight , getSignedUrl } from "./utility.js";
+import { highlightHeaderTabMenu , constructUrl , showDialog , fixModuleHeight , getSignedUrl , stopAppIdleTimer} from "./utility.js";
 import { apiRequestFailed , } from "./auth.js";
 import { createList } from "./list.js";
 
@@ -53,7 +53,7 @@ function viewKnowledgemate() {
 	shared.currentRunningApp = 'knowledgeMate';
 	$('#moduleTitle').html("LEARNING");
 	displaySection('modulesSection', 'flex', false, true);
-	//stopAppIdleTimer();
+	stopAppIdleTimer();
 
 	//updateAppRuntime("knowledgeMate", "on", "ok");
 	displayKnowledgemateMenu();

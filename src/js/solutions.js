@@ -10,7 +10,7 @@ import { Storage } from '@capacitor/storage';
 
 import { shared } from "./globals";
 import { displaySection } from "./capacitor-welcome";
-import { showDialog , pauseVideos , highlightHeaderTabMenu} from "./utility";
+import { showDialog , pauseVideos , highlightHeaderTabMenu , startAppIdleTimer} from "./utility";
 import { viewHome , getMenuBar } from "./settings";
 
 
@@ -61,7 +61,7 @@ function exitSolutions() {
 	//updateAppRuntime("solution", "off", "ok");
 	if(shared.mCustomerDetailsJSON == null) {
         console.log("No user logged in");
-        //startAppIdleTimer();
+        startAppIdleTimer();
     }
 	$('#modulesMenuArea').html('');
 	$('#modulesListBox').html('');

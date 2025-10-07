@@ -10,7 +10,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 
 import { shared } from "./globals.js";
-import { showDialog, initAppRuntimeMonitor, closeDialogBox, constructUrl, convertVersionVal, fixModuleHeight } from "./utility.js";
+import { showDialog, initAppRuntimeMonitor, closeDialogBox, constructUrl, convertVersionVal, fixModuleHeight , addBtnToFavourite ,removeBtnFromFavourite} from "./utility.js";
 import { displaySection, buildRequestOptions, RequestOptions, isValidResponse, showConfirmDialog } from "./capacitor-welcome.js";
 import { viewLogin, apiRequestFailed } from "./auth.js";
 
@@ -150,7 +150,7 @@ export async function viewHome() {
     console.log("[viewHome] End");
 }
 
- export function getMenuBar(menuSource, activeWindow) {
+export function getMenuBar(menuSource, activeWindow) {
     var htmlData = '<div class="menu ' + menuSource.menuClass + '">';
     if (menuSource.logoPresent == true) {
         var logo = shared.cmsJSON.cmsJSONdata.common.logo;
@@ -658,7 +658,7 @@ export function closeConfirmDialogBox() {
 }
 
 
- export function clearFavouriteBtns() {
+export function clearFavouriteBtns() {
     let section = document.getElementById('homemenu_favorites');
     let buttons = section.getElementsByClassName('homeMenu1BtnStyle');
     if(buttons != null && buttons.length > 0) {

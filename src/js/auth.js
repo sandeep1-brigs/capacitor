@@ -9,7 +9,7 @@ import { Storage } from '@capacitor/storage';
 
 import { shared, settingJson } from "./globals.js";
 import { displaySection, isValidResponse, buildRequestOptions, RequestOptions} from "./capacitor-welcome.js";
-import { showDialog,constructUrl } from "./utility.js";
+import { showDialog,constructUrl , startAppIdleTimer , stopAppIdleTimer} from "./utility.js";
 import { viewHome, clearFavouriteBtns, updateHomeButtonAcccess } from "./settings.js";
 import { displayBanner } from "./digiveu.js";
 
@@ -27,7 +27,7 @@ export function viewLogin(caller) {
         $("#continueButton").attr("onclick", "closeLoginWindow()");
 
         shared.mCustomerDetailsJSON = null;
-        //startAppIdleTimer();
+        startAppIdleTimer();
     } else if (caller == "menuProcess") { // Called from menu - just loginif not already logged in
         if (shared.mCustomerDetailsJSON != null) { // Already Logged in
             viewLogout();
@@ -39,7 +39,7 @@ export function viewLogin(caller) {
             $("#continueButton").attr("onclick", "closeLoginWindow()");
 
             shared.mCustomerDetailsJSON = null;
-            //startAppIdleTimer();
+            startAppIdleTimer();
     
         }
     } else if (caller == "systemProcess") { // Pressed System - its local login
@@ -124,7 +124,7 @@ function doSystemLogin() {
     if ((userID == shared.systemConfiguration.systemInfo.adminUser.toLowerCase()) && (password == shared.systemConfiguration.systemInfo.adminPassword)) {
 
         closeSystemLoginWindow();
-       // stopAppIdleTimer();
+        stopAppIdleTimer();
         viewSystem();
     } else {
         closeSystemLoginWindow();
@@ -148,7 +148,7 @@ function systemLoginError() {
 
 
 export function closeLoginWindow() {
-    //stopAppIdleTimer();
+    stopAppIdleTimer();
     $("#loginSection").css("display", "none");
 
 }
@@ -176,7 +176,7 @@ export function closeLoginWindow() {
         // viewErt();
     } else {
         console.log("No callback triggered");
-        // startAppIdleTimer();
+         startAppIdleTimer();
     }
 
 
@@ -362,7 +362,7 @@ export function doLogin(callback) {
                     console.log("🔄 [doLogin] Updating UI after successful login...");
                     closeLoginWindow();
                     updateHomeButtonAcccess();
-                    // stopAppIdleTimer();
+                     stopAppIdleTimer();
 
                     if (!deviceInfo) {
                         console.log("📡 [doLogin] Device info missing → Checking device registration...");

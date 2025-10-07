@@ -10,7 +10,7 @@ import { Storage } from '@capacitor/storage';
 
 import { shared , appUrl , s3PrivateUrl , s3PublicUrl} from "./globals.js";
 import { displaySection , buildRequestOptions , isValidResponse , RequestOptions} from "./capacitor-welcome.js";
-import { getSignedUrl ,constructUrl , populateTempCopiedImage } from "./utility.js";
+import { getSignedUrl ,constructUrl , populateTempCopiedImage , startAppIdleTimer } from "./utility.js";
 import { viewHome } from "./settings.js";
 import { viewPdfFile } from "./pdfviewer.js";
 
@@ -2334,7 +2334,7 @@ export function exitToHome() {
     bannerAliveHandleCounter = 0;
     //$('#videoControls').trigger('pause');
 
-    //startAppIdleTimer();
+    startAppIdleTimer();
     //updateAppRuntime("banner", "off", "ok");
     viewHome();
     $("#signagePage").html("");

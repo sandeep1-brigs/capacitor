@@ -8,7 +8,7 @@ import $ from 'jquery';
 import { Storage } from '@capacitor/storage';
 
 import { shared , s3PrivateUrl} from "./globals.js";
-import { showDialog, initAppRuntimeMonitor, closeDialogBox, getSignedUrl , initPinchZoom ,  constructUrl, convertVersionVal, fixModuleHeight , highlightHeaderTabMenu , populateImage } from "./utility.js";
+import { showDialog, initAppRuntimeMonitor, closeDialogBox, getSignedUrl , initPinchZoom ,  constructUrl, convertVersionVal, fixModuleHeight , highlightHeaderTabMenu , populateImage , startAppIdleTimer } from "./utility.js";
 import { displaySection, buildRequestOptions, RequestOptions, isValidResponse, showConfirmDialog } from "./capacitor-welcome.js";
 import { viewLogin, apiRequestFailed } from "./auth.js";
 import {  exitModules } from "./content";

@@ -34,7 +34,7 @@ let fingerprintScannerOpen = false;
 import { shared , appUrl } from "./globals";
 import { displaySection , buildRequestOptions , isValidResponse} from "./capacitor-welcome";
 import { viewHome } from "./settings";
-import { showDialog , highlightHeaderTabMenu , constructUrl} from "./utility";
+import { showDialog , highlightHeaderTabMenu , constructUrl , startAppIdleTimer , stopAppIdleTimer} from "./utility";
 
 
 function viewErt() {
@@ -42,7 +42,7 @@ function viewErt() {
 	$('#moduleTitle').html("ERT");
 	displaySection('modulesSection', 'flex', false, true);
 	// displaySection('ertSection', 'flex', false, false);
-	//stopAppIdleTimer();
+	stopAppIdleTimer();
 
 	//updateAppRuntime("ert", "on", "ok");
 	//initFingerprintScanner();
@@ -78,7 +78,7 @@ function exitErt() {
 	allErtShifts = null;
 	_ertStateTimer = null;
 	if(shared.mCustomerDetailsJSON == null) {
-        //startAppIdleTimer();
+        startAppIdleTimer();
     }
 	viewHome();
 }

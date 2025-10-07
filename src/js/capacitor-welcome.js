@@ -12,7 +12,7 @@ import { AppUpdate } from '@capawesome/capacitor-app-update';
 
 
 import { shared } from "./globals.js";
-import { showDialog, initAppRuntimeMonitor, closeDialogBox, constructUrl, convertVersionVal, fixModuleHeight } from "./utility.js";
+import { showDialog, initAppRuntimeMonitor, closeDialogBox, constructUrl, convertVersionVal, fixModuleHeight , observeResize } from "./utility.js";
 import { viewHome } from "./settings.js";
 
 
@@ -691,7 +691,7 @@ async function initSystem() {
     // });
 
     userFirstName = "";
-    //observeResize();
+    observeResize();
     viewHome();
 
     if((shared.systemConfiguration.systemInfo.mqttEnabled != undefined) && (shared.systemConfiguration.systemInfo.mqttEnabled != null) &&
@@ -1637,6 +1637,7 @@ function getLocalCSSPath(fileName) {
 
 
 // unified, correct RequestOptions
+
 export async function RequestOptions(apiURL, apiType = 'POST', apiData = {}) {
   apiData = apiData || {};
 
@@ -1654,7 +1655,7 @@ export async function RequestOptions(apiURL, apiType = 'POST', apiData = {}) {
   return requestOptions;
 }
 
-// buildRequestOptions already correct, but keep consistent formatting
+// buildRequestOptions for get
 export async function buildRequestOptions(apiURL, apiType = 'GET', apiData = {}) {
   apiData = apiData || {};
 

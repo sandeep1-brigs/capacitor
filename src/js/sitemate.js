@@ -29,7 +29,7 @@ let selectedId = 0;
 var unsavedData = false;
 
 import { shared , s3PrivateUrl} from "./globals.js";
-import { showDialog, initAppRuntimeMonitor, closeDialogBox, getSignedUrl , initPinchZoom ,  constructUrl, convertVersionVal, fixModuleHeight , highlightHeaderTabMenu , populateImage } from "./utility.js";
+import { showDialog, initAppRuntimeMonitor, closeDialogBox, getSignedUrl , initPinchZoom ,  constructUrl, convertVersionVal, fixModuleHeight , highlightHeaderTabMenu , populateImage , startAppIdleTimer } from "./utility.js";
 import { displaySection, buildRequestOptions, RequestOptions, isValidResponse, showConfirmDialog } from "./capacitor-welcome.js";
 import { viewLogin, apiRequestFailed } from "./auth.js";
 import {  exitModules } from "./content";
@@ -75,7 +75,7 @@ async function viewSitemate() {
 
 function exitSitemate() {
 	if(shared.mCustomerDetailsJSON == null) {
-        //startAppIdleTimer();
+        startAppIdleTimer();
     }
 	exitModules();
 }
@@ -428,85 +428,244 @@ function searchSitemateincident(pageNumber = 1, pageSize = 50) {
   }).catch(err => console.warn("Request aborted due to missing requestOptions.", err));
 }
 
-function createIncidentReport() {
-  highlightHeaderTabMenu("menuBtn", "btnId_create_newincident");
-  shared.currentState = "createIncidentReport";
-  shared.currentSourceState = shared.currentState;
-  unsavedData = true;
+// function createIncidentReport() {
+//   console.log("createIncidentReport");
+//   highlightHeaderTabMenu("menuBtn", "btnId_create_newincident");
+//   shared.currentState = "createIncidentReport";
+//   shared.currentSourceState = shared.currentState;
+//   unsavedData = true;
 
-  var htmlContent = '';
+//   var htmlContent = '';
 
-  if (sitemateConfig != null) {
-    const data = { token: shared.mCustomerDetailsJSON.token, templateId: sitemateConfig.incidentTemplateId };
+//   if (sitemateConfig != null) {
+//     const data = { token: shared.mCustomerDetailsJSON.token, templateId: sitemateConfig.incidentTemplateId };
 
-    buildRequestOptions(constructUrl("/api/getformtemplate"), "GET", data).then(request => {
-      Http.request(request).then(res => {
-        if (isValidResponse(res, "getformtemplate") && res.data) {
-          if (res.data.error != "invalid_token") { // Check if token is still valid
-            var formTemplate = (typeof res.data === "string" ? JSON.parse(res.data) : res.data);
-            console.log("formTemplate: " + formTemplate);
+//     buildRequestOptions(constructUrl("/api/getformtemplate"), "GET", data).then(request => {
+//       Http.request(request).then(res => {
+//         if (isValidResponse(res, "getformtemplate") && res.data) {
+//           if (res.data.error != "invalid_token") { // Check if token is still valid
+//             var formTemplate = (typeof res.data === "string" ? JSON.parse(res.data) : res.data);
+//             console.log("formTemplate: " + formTemplate);
 
-            htmlContent += '<div id="sitemateContentViewerArea" style="padding-bottom: 50px;">';
-              htmlContent += '<div class="moduleNadisplayTitleClassmeClass" style="border-bottom: 1px solid rgba(0,0,0,0.1);">NEW INCIDENT REPORT</div>';
+//             htmlContent += '<div id="sitemateContentViewerArea" style="padding-bottom: 50px;">';
+//               htmlContent += '<div class="moduleNadisplayTitleClassmeClass" style="border-bottom: 1px solid rgba(0,0,0,0.1);">NEW INCIDENT REPORT</div>';
 
-              htmlContent += '<div id="sitemateFormGrid">';
-                htmlContent += '<div class="selectarea">';
-                  htmlContent += '<div class="formlabel" style="margin: 10px 0;">Reporter</div>';
-                  htmlContent += '<input type="text" class="formlvalue" id="sitemateReporterName" value="'+mCustomerDetailsJSON.firstName+' '+mCustomerDetailsJSON.lastName+'" readonly/>';
+//               htmlContent += '<div id="sitemateFormGrid">';
+//                 htmlContent += '<div class="selectarea">';
+//                   htmlContent += '<div class="formlabel" style="margin: 10px 0;">Reporter</div>';
+//                   htmlContent += '<input type="text" class="formlvalue" id="sitemateReporterName" value="'+mCustomerDetailsJSON.firstName+' '+mCustomerDetailsJSON.lastName+'" readonly/>';
 
-                  if (sitemateConfig.allowAnonymousReport == true) {
-                    htmlContent += '<div class="formlabel" style="margin: 10px 0;">Anonymous</div>';
-                    htmlContent += '<input type="checkbox" id="sitemateIsAnonymous" style="margin: 10px 0;" />';
-                  }
+//                   if (sitemateConfig.allowAnonymousReport == true) {
+//                     htmlContent += '<div class="formlabel" style="margin: 10px 0;">Anonymous</div>';
+//                     htmlContent += '<input type="checkbox" id="sitemateIsAnonymous" style="margin: 10px 0;" />';
+//                   }
 
-                  htmlContent += '<div class="formlabel" style="margin: 10px 0;">Select Location</div>';
-                  htmlContent += '<input id="sitemateIncidentLocationSelect" class="formvalue" list="locationlist" >';
-                  htmlContent += '<div class="selectDiv">';
-                    htmlContent += '<datalist id="locationlist" class="selectBox" >';
-                    for (var loc of sitemateLocations) {
-                      htmlContent += '<option value="'+loc.id+'" id="sitemateLocationOption_'+loc.id+'">'+loc.id+' - '+loc.locationName+'</option>';
-                    }
-                    htmlContent += '</datalist>';
-                  htmlContent += '</div>';
+//                   htmlContent += '<div class="formlabel" style="margin: 10px 0;">Select Location</div>';
+//                   htmlContent += '<input id="sitemateIncidentLocationSelect" class="formvalue" list="locationlist" >';
+//                   htmlContent += '<div class="selectDiv">';
+//                     htmlContent += '<datalist id="locationlist" class="selectBox" >';
+//                     for (var loc of sitemateLocations) {
+//                       htmlContent += '<option value="'+loc.id+'" id="sitemateLocationOption_'+loc.id+'">'+loc.id+' - '+loc.locationName+'</option>';
+//                     }
+//                     htmlContent += '</datalist>';
+//                   htmlContent += '</div>';
 
-                  htmlContent += '<div class="formlabel" >Incident Name</div>';
-                  htmlContent += '<input class="formvalue" type="text" class="formlvalue" id="sitemateIncidentName" style="margin: 10px 0;" placeholder="Incident in short" />';
-                htmlContent += '</div>';
+//                   htmlContent += '<div class="formlabel" >Incident Name</div>';
+//                   htmlContent += '<input class="formvalue" type="text" class="formlvalue" id="sitemateIncidentName" style="margin: 10px 0;" placeholder="Incident in short" />';
+//                 htmlContent += '</div>';
 
-                htmlContent += '<div id="sitemateFormViewerArea"></div>';
-              htmlContent += '</div>';
+//                 htmlContent += '<div id="sitemateFormViewerArea"></div>';
+//               htmlContent += '</div>';
 
-              htmlContent += '<div style="width: 100%; margin-top: 20px; display: flex; justify-content: space-around; border-top: 1px solid rgba(0,0,0,0.1);"> <div class="btnStyle" id="smIncidentSubmitBtn" onclick="submitIncidentForm('+TASK_REPORT+')">SUBMIT</div></div>';
-            htmlContent += '</div>';
+//               htmlContent += '<div style="width: 100%; margin-top: 20px; display: flex; justify-content: space-around; border-top: 1px solid rgba(0,0,0,0.1);"> <div class="btnStyle" id="smIncidentSubmitBtn" onclick="submitIncidentForm('+TASK_REPORT+')">SUBMIT</div></div>';
+//             htmlContent += '</div>';
 
-            $('#modulesDisplayArea').html(htmlContent);
+//             $('#modulesDisplayArea').html(htmlContent);
 
-            viewSitemateForm(formTemplate, 'sitemateFormViewerArea', TASK_REPORT, EDIT, null);
-            $("#modulesDisplayArea").show();
-            $("#modulesMenuArea").show();
-            $("#modulesListArea").hide();
-            $('#sitemate_searchbox').html('');
-            fixModuleHeight("modulesModuleHeader, footerSection", 20, "modulesDisplayArea");
+//             viewSitemateForm(formTemplate, 'sitemateFormViewerArea', TASK_REPORT, EDIT, null);
+//             $("#modulesDisplayArea").show();
+//             $("#modulesMenuArea").show();
+//             $("#modulesListArea").hide();
+//             $('#sitemate_searchbox').html('');
+//             fixModuleHeight("modulesModuleHeader, footerSection", 20, "modulesDisplayArea");
 
-            if (sitemateConfig.allowAnonymousReport == true) {
-              $('#sitemateIsAnonymous').on('change', function() {
-                if ($('#sitemateIsAnonymous').is(":checked")) {
-                  $("#sitemateReporterName").hide();
-                } else {
-                  $("#sitemateReporterName").show();
-                }
-              });
-            }
-          } else { // Token expired
-            getNewToken("createIncidentReport(" + editOrView + ")");
-          }
-        }
-      }).catch(err => {
-        apiRequestFailed(err, "getformtemplate");
+//             if (sitemateConfig.allowAnonymousReport == true) {
+//               $('#sitemateIsAnonymous').on('change', function() {
+//                 if ($('#sitemateIsAnonymous').is(":checked")) {
+//                   $("#sitemateReporterName").hide();
+//                 } else {
+//                   $("#sitemateReporterName").show();
+//                 }
+//               });
+//             }
+//           } else { // Token expired
+//             getNewToken("createIncidentReport(" + editOrView + ")");
+//           }
+//         }
+//       }).catch(err => {
+//         apiRequestFailed(err, "getformtemplate");
+//       });
+//     }).catch(err => console.warn("Request aborted due to missing requestOptions.", err));
+//   }
+// }
+
+
+async function createIncidentReport() {
+  console.log("[createIncidentReport] ➤ Function called");
+
+  try {
+    // Step 1: UI header setup
+    highlightHeaderTabMenu("menuBtn", "btnId_create_newincident");
+    shared.currentState = "createIncidentReport";
+    shared.currentSourceState = shared.currentState;
+    unsavedData = true;
+
+    let htmlContent = "";
+
+    // Step 2: Validate config availability
+    if (!window.sitemateConfig) {
+      console.warn("[createIncidentReport] ⚠️ sitemateConfig not yet loaded, retrying in 500ms...");
+      setTimeout(createIncidentReport, 500);
+      return;
+    }
+
+    const sitemateConfig = window.sitemateConfig; // make local alias
+    console.log("[createIncidentReport] ✅ sitemateConfig loaded:", sitemateConfig);
+
+    // Step 3: Prepare API payload
+    const data = {
+      token: shared.mCustomerDetailsJSON?.token,
+      templateId: sitemateConfig.incidentTemplateId,
+    };
+    console.log("[createIncidentReport] 🧩 Request data:", data);
+
+    // Step 4: Construct API request
+    const request = await buildRequestOptions(constructUrl("/api/getformtemplate"), "GET", data);
+    if (!request) {
+      console.error("[createIncidentReport] ❌ buildRequestOptions() returned null/undefined");
+      return;
+    }
+    console.log("[createIncidentReport] ✅ Request built:", request);
+
+    // Step 5: Execute API call
+    const res = await Http.request(request);
+    console.log("[createIncidentReport] 📩 API response:", res);
+
+    // Step 6: Validate API response
+    if (!isValidResponse(res, "getformtemplate")) {
+      console.error("[createIncidentReport] ❌ Invalid response:", res);
+      return;
+    }
+
+    if (!res.data) {
+      console.error("[createIncidentReport] ❌ Missing 'data' field in response:", res);
+      return;
+    }
+
+    // Step 7: Check for token expiry
+    if (res.data.error === "invalid_token") {
+      console.warn("[createIncidentReport] ⚠️ Token invalid — refreshing token...");
+      getNewToken("createIncidentReport()");
+      return;
+    }
+
+    // Step 8: Parse form template safely
+    let formTemplate;
+    try {
+      formTemplate = typeof res.data === "string" ? JSON.parse(res.data) : res.data;
+    } catch (e) {
+      console.error("[createIncidentReport] ❌ Failed to parse form template:", e);
+      return;
+    }
+
+    console.log("[createIncidentReport] 🧱 Form template parsed successfully:", formTemplate);
+
+    // Step 9: Build HTML layout
+    htmlContent += `
+      <div id="sitemateContentViewerArea" style="padding-bottom: 50px;">
+        <div class="moduleNadisplayTitleClassmeClass" style="border-bottom: 1px solid rgba(0,0,0,0.1);">
+          NEW INCIDENT REPORT
+        </div>
+        <div id="sitemateFormGrid">
+          <div class="selectarea">
+            <div class="formlabel" style="margin: 10px 0;">Reporter</div>
+            <input type="text" class="formlvalue" id="sitemateReporterName" 
+                   value="${mCustomerDetailsJSON.firstName} ${mCustomerDetailsJSON.lastName}" readonly />
+    `;
+
+    if (sitemateConfig.allowAnonymousReport === true) {
+      htmlContent += `
+        <div class="formlabel" style="margin: 10px 0;">Anonymous</div>
+        <input type="checkbox" id="sitemateIsAnonymous" style="margin: 10px 0;" />
+      `;
+    }
+
+    htmlContent += `
+        <div class="formlabel" style="margin: 10px 0;">Select Location</div>
+        <input id="sitemateIncidentLocationSelect" class="formvalue" list="locationlist" />
+        <div class="selectDiv">
+          <datalist id="locationlist" class="selectBox">
+    `;
+
+    if (window.sitemateLocations && window.sitemateLocations.length > 0) {
+      for (const loc of sitemateLocations) {
+        htmlContent += `<option value="${loc.id}" id="sitemateLocationOption_${loc.id}">
+                          ${loc.id} - ${loc.locationName}
+                        </option>`;
+      }
+    } else {
+      console.warn("[createIncidentReport] ⚠️ sitemateLocations empty or undefined");
+    }
+
+    htmlContent += `
+          </datalist>
+        </div>
+        <div class="formlabel">Incident Name</div>
+        <input class="formvalue" type="text" id="sitemateIncidentName" style="margin: 10px 0;" placeholder="Incident in short" />
+      </div>
+      <div id="sitemateFormViewerArea"></div>
+    </div>
+    <div style="width: 100%; margin-top: 20px; display: flex; justify-content: space-around; border-top: 1px solid rgba(0,0,0,0.1);">
+      <div class="btnStyle" id="smIncidentSubmitBtn" onclick="submitIncidentForm(${TASK_REPORT})">SUBMIT</div>
+    </div>
+  </div>
+    `;
+
+    // Step 10: Inject HTML into DOM
+    $("#modulesDisplayArea").html(htmlContent);
+    console.log("[createIncidentReport] ✅ HTML rendered successfully");
+
+    // Step 11: Render form content
+    try {
+      viewSitemateForm(formTemplate, "sitemateFormViewerArea", TASK_REPORT, EDIT, null);
+    } catch (err) {
+      console.error("[createIncidentReport] ❌ viewSitemateForm failed:", err);
+    }
+
+    // Step 12: Adjust UI
+    $("#modulesDisplayArea").show();
+    $("#modulesMenuArea").show();
+    $("#modulesListArea").hide();
+    $("#sitemate_searchbox").html("");
+    fixModuleHeight("modulesModuleHeader, footerSection", 20, "modulesDisplayArea");
+
+    // Step 13: Handle anonymous toggle logic
+    if (sitemateConfig.allowAnonymousReport === true) {
+      $("#sitemateIsAnonymous").on("change", function () {
+        const isChecked = $(this).is(":checked");
+        console.log("[createIncidentReport] Anonymous checkbox changed:", isChecked);
+        $("#sitemateReporterName").toggle(!isChecked);
       });
-    }).catch(err => console.warn("Request aborted due to missing requestOptions.", err));
+    }
+
+    console.log("[createIncidentReport] ✅ Completed successfully");
+  } catch (err) {
+    console.error("[createIncidentReport] ❌ Unexpected error:", err);
   }
 }
+
+
+
 
 function viewNotificationIncident(incidentId) {
 	//$('#loadingmessage').show();

@@ -13,7 +13,7 @@ import { Browser } from '@capacitor/browser';
 import { shared , s3PrivateUrl } from "./globals.js";
 import { displaySection , buildRequestOptions , isValidResponse , RequestOptions ,showConfirmDialog} from "./capacitor-welcome.js";
 import { getMenuBar ,viewHome , getNewToken} from "./settings.js";
-import { highlightHeaderTabMenu , constructUrl , showDialog , fixModuleHeight , getSignedUrl } from "./utility.js";
+import { highlightHeaderTabMenu , constructUrl , showDialog , fixModuleHeight , getSignedUrl , startAppIdleTimer } from "./utility.js";
 import { apiRequestFailed , } from "./auth.js";
 import { createList } from "./list.js";
 import { exitModules } from "./content.js";
@@ -118,7 +118,7 @@ async function viewSop() {
 
 function exitLotomate() {
 	if(shared.mCustomerDetailsJSON == null) {
-        //startAppIdleTimer();
+        startAppIdleTimer();
     }
 	exitModules();
 }

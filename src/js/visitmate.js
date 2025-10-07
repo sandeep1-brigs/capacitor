@@ -10,7 +10,7 @@ import { Browser } from '@capacitor/browser';
 
 import { shared } from "./globals";
 import { showConfirmDialog , displaySection , buildRequestOptions , RequestOptions , isValidResponse } from "./capacitor-welcome";
-import { showDialog , highlightHeaderTabMenu , constructUrl , fixModuleHeight , getSignedUrl , captureImage} from "./utility";
+import { showDialog , highlightHeaderTabMenu , constructUrl , fixModuleHeight , getSignedUrl , captureImage , startAppIdleTimer} from "./utility";
 import {  exitModules } from "./content";
 import { apiRequestFailed } from "./auth";
 import { createList } from "./list";
@@ -83,7 +83,7 @@ function closeVisitmate() {
 
 function exitVisitmate() {
 	if(shared.mCustomerDetailsJSON == null) {
-        //startAppIdleTimer();
+        startAppIdleTimer();
     }
 	exitModules();
 }
@@ -160,150 +160,338 @@ function viewMyVisitors(type = 'ALL') {
 
 
 
-function getMyVisitors(page = 1, size = 50) {
-  shared.currentState = "getMyVisitors";
-  shared.currentSourceState = shared.currentState;
-  unsavedData = false;
-  var type = myVisitType;
+// function getMyVisitors(page = 1, size = 50) {
+//   shared.currentState = "getMyVisitors";
+//   shared.currentSourceState = shared.currentState;
+//   unsavedData = false;
+//   var type = myVisitType;
 
-  $('#modulesMenuArea').show();
-  $('#modulesListArea').show();
-  $('#modulesDisplayArea').hide();
+//   $('#modulesMenuArea').show();
+//   $('#modulesListArea').show();
+//   $('#modulesDisplayArea').hide();
 
-  highlightHeaderTabMenu("menuBtn", "btnId_view_myvisitors");
-  let searchStr = $("#visitmate_visit_search_input").val();
-  var months = $("#myVisitmateMonths").val();
-  if (months == "") {
-    months = 0;
-  }
+//   highlightHeaderTabMenu("menuBtn", "btnId_view_myvisitors");
+//   let searchStr = $("#visitmate_visit_search_input").val();
+//   var months = $("#myVisitmateMonths").val();
+//   if (months == "") {
+//     months = 0;
+//   }
 
-  var htmlContent = '';
+//   var htmlContent = '';
 
-  htmlContent += '<div style="padding: 0 10px; display: flex; justify-content: flex-start; flex-wrap: wrap;">';
-  htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_ALL" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'ALL\')">All</div>';
-  htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_REGISTERED" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'REGISTERED\')">Scheduled</div>';
-  htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_TRAINED" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'TRAINED\')">Training Complete</div>';
-  htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_VISITING" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'VISITING\')">In Progress</div>';
-  htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_VISITED" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'VISITED\')">Completed</div>';
-  htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_CANCELLED" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'CANCELLED\')">Cancelled</div>';
-  htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_APPROVAL" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'APPROVAL\')">Approval Pending</div>';
-  htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_REJECTED" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'REJECTED\')">Rejected</div>';
-  htmlContent += '</div>';
-  htmlContent += '<div id="visitmatevisitListArea"></div>';
-  $('#modulesListBox').html(htmlContent);
+//   htmlContent += '<div style="padding: 0 10px; display: flex; justify-content: flex-start; flex-wrap: wrap;">';
+//   htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_ALL" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'ALL\')">All</div>';
+//   htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_REGISTERED" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'REGISTERED\')">Scheduled</div>';
+//   htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_TRAINED" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'TRAINED\')">Training Complete</div>';
+//   htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_VISITING" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'VISITING\')">In Progress</div>';
+//   htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_VISITED" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'VISITED\')">Completed</div>';
+//   htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_CANCELLED" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'CANCELLED\')">Cancelled</div>';
+//   htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_APPROVAL" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'APPROVAL\')">Approval Pending</div>';
+//   htmlContent += '<div class="listBoxActionButton visitTypeClass" id="visit_REJECTED" style="border-radius: 5px; padding: 5px 10px; margin: 5px;" onclick="viewMyVisitors(\'REJECTED\')">Rejected</div>';
+//   htmlContent += '</div>';
+//   htmlContent += '<div id="visitmatevisitListArea"></div>';
+//   $('#modulesListBox').html(htmlContent);
 
-  var htmlContent = '';
+//   var htmlContent = '';
 
-  const data = {
-    "token": shared.mCustomerDetailsJSON.token,
-    "searchStr": searchStr,
-    "months": months,
-    "page": page,
-    "size": size,
-    "visitState": type
-  };
+//   const data = {
+//     "token": shared.mCustomerDetailsJSON.token,
+//     "searchStr": searchStr,
+//     "months": months,
+//     "page": page,
+//     "size": size,
+//     "visitState": type
+//   };
 
-  const url = "/visitorvisits/searchmyvisitorvisitspaginated";
+//   const url = "/visitorvisits/searchmyvisitorvisitspaginated";
 
-  buildRequestOptions(constructUrl(url), "GET", data)
-    .then(request => Http.request(request))
-    .then(res => {
-      if (isValidResponse(res, url)) {
-        const jqXHR = res.data;
-        if (jqXHR.error !== "invalid_token") {
-          myVisitorVisits = jqXHR;
+//   buildRequestOptions(constructUrl(url), "GET", data)
+//     .then(request => Http.request(request))
+//     .then(res => {
+//       if (isValidResponse(res, url)) {
+//         const jqXHR = res.data;
+//         if (jqXHR.error !== "invalid_token") {
+//           myVisitorVisits = jqXHR;
 
-          listItems = [];
+//           listItems = [];
 
-          var items = myVisitorVisits.content;
-          var pageable = myVisitorVisits.pageable;
-          totalPages = myVisitorVisits.totalPages;
+//           var items = myVisitorVisits.content;
+//           var pageable = myVisitorVisits.pageable;
+//           totalPages = myVisitorVisits.totalPages;
 
-          if (items.length > 0) {
-            for (var index in items) {
-              let states = [];
-              let actions = [];
-              let activeActions = [];
-              let item = items[index];
+//           if (items.length > 0) {
+//             for (var index in items) {
+//               let states = [];
+//               let actions = [];
+//               let activeActions = [];
+//               let item = items[index];
 
-              let startDateStr = new Date(item.visitStartDate);
-              let endDateStr = new Date(item.visitEndDate);
-              const startDate = startDateStr.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
-              const endDate = endDateStr.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+//               let startDateStr = new Date(item.visitStartDate);
+//               let endDateStr = new Date(item.visitEndDate);
+//               const startDate = startDateStr.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+//               const endDate = endDateStr.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
 
-              let name = '<div class="title">' + item.visitorName + '</div>';
+//               let name = '<div class="title">' + item.visitorName + '</div>';
 
-              let description = '<div style="display: flex;"><span class="material-symbols-outlined" style="font-size: 20px; padding-right: 10px; color: var(--secondary-cyan);">business_center</span><div>' + item.visitorCompany + '</div></div>';
-              description += '<div style="display: flex;"><span class="material-symbols-outlined" style="font-size: 20px; padding-right: 10px; color: var(--secondary-cyan);">mail</span><a href="mailto:' + item.visitorEmail + '">' + item.visitorEmail + '</a></div>';
-              description += '<div style="display: flex;"><span class="material-symbols-outlined" style="font-size: 20px; padding-right: 10px; color: var(--secondary-cyan);">call</span><a href="tel:' + item.visitorPhone + '">' + item.visitorPhone + '</a></div>';
-              description += '<div>' + startDate + ' - ' + endDate + '</div>';
+//               let description = '<div style="display: flex;"><span class="material-symbols-outlined" style="font-size: 20px; padding-right: 10px; color: var(--secondary-cyan);">business_center</span><div>' + item.visitorCompany + '</div></div>';
+//               description += '<div style="display: flex;"><span class="material-symbols-outlined" style="font-size: 20px; padding-right: 10px; color: var(--secondary-cyan);">mail</span><a href="mailto:' + item.visitorEmail + '">' + item.visitorEmail + '</a></div>';
+//               description += '<div style="display: flex;"><span class="material-symbols-outlined" style="font-size: 20px; padding-right: 10px; color: var(--secondary-cyan);">call</span><a href="tel:' + item.visitorPhone + '">' + item.visitorPhone + '</a></div>';
+//               description += '<div>' + startDate + ' - ' + endDate + '</div>';
 
-              let image = '';
-              if (item.visitorImage != undefined && item.visitorImage != null && item.visitorImage.length > 0) {
-                image = item.visitorImage;
-              } else {
-                image = '<span class="material-symbols-outlined ticketStyleMaterializeIcon">assignment_ind</span>';
-              }
+//               let image = '';
+//               if (item.visitorImage != undefined && item.visitorImage != null && item.visitorImage.length > 0) {
+//                 image = item.visitorImage;
+//               } else {
+//                 image = '<span class="material-symbols-outlined ticketStyleMaterializeIcon">assignment_ind</span>';
+//               }
 
-              let visitStatus = "Unknown";
-              if (item.idPrinted == true) {
-                visitStatus = "Visiting";
-              } else {
-                visitStatus = item.visitStatus.toLowerCase().trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-              }
-              states.push({ "text": visitStatus, "type": "warningState" });
-              var time = new Date().getTime();
-              if (item.visitEndDate < (time + dayInMs) && item.idPrinted == false) {
-                states.push({ "text": "Not Visited", "type": "errorState" });
-              }
+//               let visitStatus = "Unknown";
+//               if (item.idPrinted == true) {
+//                 visitStatus = "Visiting";
+//               } else {
+//                 visitStatus = item.visitStatus.toLowerCase().trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+//               }
+//               states.push({ "text": visitStatus, "type": "warningState" });
+//               var time = new Date().getTime();
+//               if (item.visitEndDate < (time + dayInMs) && item.idPrinted == false) {
+//                 states.push({ "text": "Not Visited", "type": "errorState" });
+//               }
 
-              if (item.visitStatus == "APPROVAL") {
-                actions.push({ "text": "Approve", "type": "button", "actionClass": "activeActionWideBlue", "act": "manageVisitRequest('" + item.id + "', 1)" });
-                activeActions.push({ "text": "Approve" });
-                actions.push({ "text": "Reject", "type": "button", "actionClass": "activeActionWideBlue", "act": "manageVisitRequest('" + item.id + "', 0)" });
-                activeActions.push({ "text": "Reject" });
-              }
+//               if (item.visitStatus == "APPROVAL") {
+//                 actions.push({ "text": "Approve", "type": "button", "actionClass": "activeActionWideBlue", "act": "manageVisitRequest('" + item.id + "', 1)" });
+//                 activeActions.push({ "text": "Approve" });
+//                 actions.push({ "text": "Reject", "type": "button", "actionClass": "activeActionWideBlue", "act": "manageVisitRequest('" + item.id + "', 0)" });
+//                 activeActions.push({ "text": "Reject" });
+//               }
 
-              if (item.courseComplete == true) {
-                item.visitStatus = "TRAINED";
-              }
+//               if (item.courseComplete == true) {
+//                 item.visitStatus = "TRAINED";
+//               }
 
-              if (item.visitStatus == "TRAINED" || item.visitStatus == "VISITING") {
-                actions.push({ "text": "Training Status", "type": "button", "actionClass": "activeActionWideBlue", "act": "getCourseState(" + item.courseId + ", " + item.visitorId + ")" });
-                activeActions.push({ "text": "Training Status" });
-                actions.push({ "text": "Visitor Pass", "type": "button", "actionClass": "activeActionWideGreen", "act": "viewVisitorRecord(" + item.id + ", 'pass')" });
-                activeActions.push({ "text": "Visitor Pass" });
-              }
-              if (item.idPrinted == true) {
-                actions.push({ "text": "Complete", "type": "button", "actionClass": "activeActionWideOrange", "act": "setVisitStatus(" + item.id + ", 'COMPLETED')" });
-                activeActions.push({ "text": "Complete" });
-              }
+//               if (item.visitStatus == "TRAINED" || item.visitStatus == "VISITING") {
+//                 actions.push({ "text": "Training Status", "type": "button", "actionClass": "activeActionWideBlue", "act": "getCourseState(" + item.courseId + ", " + item.visitorId + ")" });
+//                 activeActions.push({ "text": "Training Status" });
+//                 actions.push({ "text": "Visitor Pass", "type": "button", "actionClass": "activeActionWideGreen", "act": "viewVisitorRecord(" + item.id + ", 'pass')" });
+//                 activeActions.push({ "text": "Visitor Pass" });
+//               }
+//               if (item.idPrinted == true) {
+//                 actions.push({ "text": "Complete", "type": "button", "actionClass": "activeActionWideOrange", "act": "setVisitStatus(" + item.id + ", 'COMPLETED')" });
+//                 activeActions.push({ "text": "Complete" });
+//               }
 
-              let itemJson = { "id": item.id, "image": image, "title": name, "description": description, "clickAction": "viewVisitorRecord(" + item.id + ")", "states": states, "actions": actions, "activeActions": activeActions };
-              listItems.push(itemJson);
+//               let itemJson = { "id": item.id, "image": image, "title": name, "description": description, "clickAction": "viewVisitorRecord(" + item.id + ")", "states": states, "actions": actions, "activeActions": activeActions };
+//               listItems.push(itemJson);
 
-              if (index == items.length - 1) {
-                createList("visitor", htmlContent, listItems, pageable, totalPages, "visitmatevisitListArea", "", "getMyVisitors", "ticketStyle");
-                let typeId = type.replace(/\s+/g, '');
-                $('#visit_' + typeId).addClass("activeAction1");
-              }
-            }
-          } else {
-            htmlContent = '<div style="padding: 20px;">No visitors found for the given duration and filter (' + type + ')!</div>';
-            $('#visitmatevisitListArea').html(htmlContent);
-            let typeId = type.replace(/\s+/g, '');
-            $('#visit_' + typeId).addClass("activeAction1");
-          }
+//               if (index == items.length - 1) {
+//                 createList("visitor", htmlContent, listItems, pageable, totalPages, "visitmatevisitListArea", "", "getMyVisitors", "ticketStyle");
+//                 let typeId = type.replace(/\s+/g, '');
+//                 $('#visit_' + typeId).addClass("activeAction1");
+//               }
+//             }
+//           } else {
+//             htmlContent = '<div style="padding: 20px;">No visitors found for the given duration and filter (' + type + ')!</div>';
+//             $('#visitmatevisitListArea').html(htmlContent);
+//             let typeId = type.replace(/\s+/g, '');
+//             $('#visit_' + typeId).addClass("activeAction1");
+//           }
 
-        } else {
-          getNewToken("getMyVisitors()");
-        }
+//         } else {
+//           getNewToken("getMyVisitors()");
+//         }
+//       }
+//     })
+//     .catch(err => {
+//       apiRequestFailed(err, url);
+//     });
+// }
+
+async function getMyVisitors(page = 1, size = 50) {
+  try {
+    shared.currentState = "getMyVisitors";
+    shared.currentSourceState = shared.currentState;
+    unsavedData = false;
+    const type = myVisitType;
+
+    $("#modulesMenuArea").show();
+    $("#modulesListArea").show();
+    $("#modulesDisplayArea").hide();
+
+    highlightHeaderTabMenu("menuBtn", "btnId_view_myvisitors");
+
+    const searchStr = $("#visitmate_visit_search_input").val() || "";
+    const months = $("#myVisitmateMonths").val() || 0;
+
+    // Build the tab header
+    let htmlContent = `
+      <div style="padding: 0 10px; display: flex; justify-content: flex-start; flex-wrap: wrap;">
+        ${["ALL", "REGISTERED", "TRAINED", "VISITING", "VISITED", "CANCELLED", "APPROVAL", "REJECTED"]
+          .map(
+            state => `
+              <div class="listBoxActionButton visitTypeClass" 
+                   id="visit_${state}" 
+                   style="border-radius: 5px; padding: 5px 10px; margin: 5px;" 
+                   onclick="viewMyVisitors('${state}')">
+                   ${state === "REGISTERED" ? "Scheduled" :
+                      state === "TRAINED" ? "Training Complete" :
+                      state === "VISITING" ? "In Progress" :
+                      state === "VISITED" ? "Completed" :
+                      state === "CANCELLED" ? "Cancelled" :
+                      state === "APPROVAL" ? "Approval Pending" :
+                      state === "REJECTED" ? "Rejected" :
+                      "All"}
+              </div>`
+          ).join("")}
+      </div>
+      <div id="visitmatevisitListArea"></div>
+    `;
+    $("#modulesListBox").html(htmlContent);
+
+    // ✅ Build URL with query parameters
+    const baseUrl = constructUrl("/visitorvisits/searchmyvisitorvisitspaginated");
+    const queryParams = new URLSearchParams({
+      token: shared.mCustomerDetailsJSON.token,
+      searchStr,
+      months,
+      page,
+      size,
+      visitState: type,
+    }).toString();
+    const fullUrl = `${baseUrl}?${queryParams}`;
+
+    // ✅ Build request for GET (no body)
+    const request = await buildRequestOptions(fullUrl, "GET");
+
+    const res = await Http.request(request);
+
+    // ✅ Validate the structure of the response
+    if (!res || !res.data) {
+      console.error("Invalid API response:", res);
+      return apiRequestFailed("Empty or malformed response", fullUrl);
+    }
+
+    if (!isValidResponse(res, fullUrl)) {
+      console.warn(fullUrl, "Failed!");
+      return;
+    }
+
+    const jqXHR = res.data;
+
+    if (jqXHR.error === "invalid_token") {
+      return getNewToken("getMyVisitors()");
+    }
+
+    const items = jqXHR.content || [];
+    const pageable = jqXHR.pageable || {};
+    const totalPages = jqXHR.totalPages || 0;
+
+    if (items.length === 0) {
+      $("#visitmatevisitListArea").html(
+        `<div style="padding: 20px;">No visitors found for the given duration and filter (${type})!</div>`
+      );
+      $(`#visit_${type.replace(/\s+/g, "")}`).addClass("activeAction1");
+      return;
+    }
+
+    // ✅ Build list items dynamically
+    const listItems = items.map(item => {
+      const states = [];
+      const actions = [];
+      const activeActions = [];
+
+      const startDate = new Date(item.visitStartDate).toLocaleString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+
+      const endDate = new Date(item.visitEndDate).toLocaleString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+
+      const name = `<div class="title">${item.visitorName}</div>`;
+      let description = `
+        <div style="display: flex;">
+          <span class="material-symbols-outlined" style="font-size: 20px; padding-right: 10px; color: var(--secondary-cyan);">business_center</span>
+          <div>${item.visitorCompany}</div>
+        </div>
+        <div style="display: flex;">
+          <span class="material-symbols-outlined" style="font-size: 20px; padding-right: 10px; color: var(--secondary-cyan);">mail</span>
+          <a href="mailto:${item.visitorEmail}">${item.visitorEmail}</a>
+        </div>
+        <div style="display: flex;">
+          <span class="material-symbols-outlined" style="font-size: 20px; padding-right: 10px; color: var(--secondary-cyan);">call</span>
+          <a href="tel:${item.visitorPhone}">${item.visitorPhone}</a>
+        </div>
+        <div>${startDate} - ${endDate}</div>`;
+
+      const image = item.visitorImage?.length
+        ? item.visitorImage
+        : '<span class="material-symbols-outlined ticketStyleMaterializeIcon">assignment_ind</span>';
+
+      let visitStatus = item.idPrinted ? "Visiting" : capitalizeWords(item.visitStatus || "Unknown");
+      states.push({ text: visitStatus, type: "warningState" });
+
+      const now = Date.now();
+      if (item.visitEndDate < now + dayInMs && !item.idPrinted) {
+        states.push({ text: "Not Visited", type: "errorState" });
       }
-    })
-    .catch(err => {
-      apiRequestFailed(err, url);
+
+      if (item.visitStatus === "APPROVAL") {
+        actions.push(
+          { text: "Approve", type: "button", actionClass: "activeActionWideBlue", act: `manageVisitRequest('${item.id}', 1)` },
+          { text: "Reject", type: "button", actionClass: "activeActionWideBlue", act: `manageVisitRequest('${item.id}', 0)` }
+        );
+      }
+
+      if (item.courseComplete) item.visitStatus = "TRAINED";
+
+      if (["TRAINED", "VISITING"].includes(item.visitStatus)) {
+        actions.push(
+          { text: "Training Status", type: "button", actionClass: "activeActionWideBlue", act: `getCourseState(${item.courseId}, ${item.visitorId})` },
+          { text: "Visitor Pass", type: "button", actionClass: "activeActionWideGreen", act: `viewVisitorRecord(${item.id}, 'pass')` }
+        );
+      }
+
+      if (item.idPrinted) {
+        actions.push({ text: "Complete", type: "button", actionClass: "activeActionWideOrange", act: `setVisitStatus(${item.id}, 'COMPLETED')` });
+      }
+
+      return {
+        id: item.id,
+        image,
+        title: name,
+        description,
+        clickAction: `viewVisitorRecord(${item.id})`,
+        states,
+        actions,
+        activeActions,
+      };
     });
+
+    createList("visitor", "", listItems, pageable, totalPages, "visitmatevisitListArea", "", "getMyVisitors", "ticketStyle");
+    $(`#visit_${type.replace(/\s+/g, "")}`).addClass("activeAction1");
+  } catch (err) {
+    apiRequestFailed(err, "/visitorvisits/searchmyvisitorvisitspaginated");
+  }
 }
+
+/* Helper: Capitalize words */
+function capitalizeWords(str = "") {
+  return str
+    .toLowerCase()
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 
 
 
